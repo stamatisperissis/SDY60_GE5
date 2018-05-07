@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+  <title>Σχεδιασμός Διαδρομής</title>
+  <style>
+	  
+    /* Τα στύλ και οι ιδιότητες των αντικειμένων της σελίδας
+	  βρίσκονται τοπικά και όχι σε css αρχείο.*/
+    
+    #map {
+      height: 70%;
+    }
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    #control-panel {
+	  align-self: center;
+      position: absolute;
+      left: 100px;
+      z-index: 5;
+      background-color: #E0EDDE;
+      padding: 10px;
+      border: 2px solid #999;
+      text-align: center;
+	  font-family: 'Verdana', 'sans-serif';
+      line-height: 30px;
+      padding-left: 10px;		
+    }
+    
+
+    
+    #control-panel2 {
+	  align-self: center;
+      position: absolute;
+      left: 550px;
+      z-index: 5;
+      background-color: #E0EDDE;
+      padding: 10px;
+      border: 2px solid #999;
+      text-align: center;
+	  font-family: 'Verdana', 'sans-serif';
+      line-height: 30px;
+      padding-left: 10px;		
+    }
+    
+
+    
+	#intro-panel {
+	  align-content: center;
+      position:absolute;
+      left: 30%;
+      z-index: 5;
+      background-color: #EFD0B0;
+      padding: 10px;
+      border: 2px solid #999;
+      text-align: center;
+      font-family: 'Verdana', 'sans-serif';
+      line-height: 10px;
+      padding-left: 10px;
+    }  
+    
+    .disabledbutton {
+    pointer-events: none;
+    opacity: 0.4;
+	}
+	
+	.enabledbutton {
+    pointer-events: all;
+    opacity: 1.0;
+	}
+	  
+  </style>
+</head>
+
+<body>
+	
+	<table style="width: 100%;" border = "2" cellpadding = "0"  >
+	<tbody>
+		<tr>
+			<td col width="50%" col align="center"> 
+				
+				<h2><u><p>Δημιουργία Νέας Διαδομής</p></u></h2> 
+				<p></p>
+				<p>Επιλογή Τύπου Διαδρομής : 
+				
+				<select id=routeTypeInsert>
+					<option value="onFoot">Πεζός</option>
+					<option value="onWheel">Ειδικές Ανάγκες</option>
+					<option value="onBicycle">Με Ποδήλατο</option>
+				</select>
+				</p>
+				
+				
+				<p>	
+				<input id=routeName type="text" >
+					
+				<button id=btnStart onclick="startRecord()">Έναρξη Καταγραφής</button>	
+				<button id=btnStop onclick="stopRecord()">Τέλος Καταγραφής</button>
+				
+				</p>
+				
+				
+			</td>
+			<td col width="50%" col align="center"> 
+				
+				<h2><u><p><p>Παρουσίαση Διαδρομής</p></u></h2> 
+				<p></p>
+				<p>Επιλογή Τύπου Διαδρομής : 
+				
+				<select id=routeTypeBrowse>
+					<option value="onFoot">Πεζός</option>
+					<option value="onWheel">Ειδικές Ανάγκες</option>
+					<option value="onBicycle">Με Ποδήλατο</option>
+				</select>
+				</p>
+				<button id=btnSearch onclick="searchRecords()">Έναρξη Αναζήτησης</button>
+				
+				<select id=routeList onChange="routeSelect(this);">	
+					<option selected>Διαλέξτε διαδρομή</option>
+				</select>
+				
+			</td>
+		</tr>
+	</tbody>
+</table>
+	
+
+ 
+ <!-- Δημιουργία του επεξηγηματικού panel στην κορυφή της σελίδας. -->
+ 
+  <div id="intro-panel"; align="center">
+    <p><strong>Πατήστε το αριστερό πλήκτρο για να προσθέσετε τα σημεία της διαδρομής .... <br>
+      <br>
+      Η καταχώρηση στη ΒΔ γίνεται αυτόματα. <br>
+  <br>
+      Για να δείτε καθαρά τη διαδρομή, Καθαρίστε τον χάρτη και Ανακτήστε από τη ΒΔ. 
+    </strong></p>
+</div>
+
+ <!-- Δημιουργία του χάρτη σε άλλο διαμέρισμα -->
+  <div id="map"></div>
+  
+  <!-- Δημιουργία του panel των κουμπιών στο κάτω μέρος της σελίδας. -->
+  <div id="control-panel"; align="center">
+    <input id=btnRetrieve onclick="retrievePolyline();" type=button value="Ανάκτηση από τη ΒΔ" >
+    <input id=btnErase onclick="eraseDB();" type=button value="Διαγραφή από τη ΒΔ">
+    <input id=btnClear onclick="clearMap();" type=button value="Καθαρισμός Χάρτη">
+   </div>
+   
+   <div id="control-panel2"; align="center">
+	   Επιλογή marker : 
+		
+		<select id=markers onChange="changeMarker(this);">
+			<option value="http://maps.google.com/mapfiles/kml/pushpin/red-pushpin.png">Προκαθορισμένο</option>
+			<option value="http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png">Οδικά Έργα</option>
+			<option value="http://maps.google.com/mapfiles/kml/pushpin/purple-pushpin.png">Κλίση Εδάφους</option>
+			<option value="http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png">Σκαλιά</option>
+			<option value="http://maps.google.com/mapfiles/kml/shapes/camera.png">Φωτογραφία</option>
+		</select>
+
+  </div>  
+     
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script> <!-- Ανενεργά στοιχεία κατά την έναρξη
+$("#map").addClass("disabledbutton");
+$("#intro-panel").addClass("disabledbutton");
+
+$("#btnRetrieve").attr('disabled','disabled');
+$("#btnErase").attr('disabled','disabled');
+$("#btnClear").attr('disabled','disabled');
+document.getElementById("markers").disabled = true;
+//document.getElementById("btnStop").disabled = true;
+</script>
+
+
+<script>
+	
+	
+
+<!-- document.getElementById('map').style.pointerEvents = 'none';
+<!-- document.getElementById('map').style.pointerEvents = 'auto';
+<!-- document.getElementById('map').style.opacity = "0.5";
+
+function startRecord(){
+	<!-- Έλεγχος εγκυρότητας πεδίων
+	
+	if (document.getElementById("routeName").value == ""){
+		window.alert("Πρέπει να δώσετε όνομα διαδρομής ....");
+		
+	} else {
+			$("#map").addClass("enabledbutton");
+			$("#intro-panel").addClass("enabledbutton");
+			document.getElementById("btnStop").disabled = false;<!-- Δεν παίζει
+			document.getElementById("btnStart").disabled = true;
+			
+			
+			document.getElementById("btnRetrieve").disabled = false;
+			document.getElementById("btnErase").disabled = false;
+			document.getElementById("btnClear").disabled = false;
+			document.getElementById("markers").disabled = false;
+			
+			document.getElementById("routeTypeInsert").disabled = true;<!-- Δεν παίζει
+			
+			document.getElementById("routeTypeBrowse").disabled = true;
+			document.getElementById("btnSearch").disabled = true;
+			document.getElementById("routeList").disabled = true;
+			document.getElementById("routeName").disabled = true;
+	}
+	
+	
+<!--	var txt;
+<!--	var r = confirm("Press a button!");
+<!--		if (r == true) {
+<!--			txt = "You pressed OK!";
+<!--			window.alert(txt);
+<!--		} else {
+<!--			txt = "You pressed Cancel!";
+<!--		window.alert(txt);
+<!--		}
+
+
+<!-- var txt = document.getElementById("routeType").value;
+<!-- var txt2 = document.getElementById("routeName").value;
+
+<!-- window.alert(txt);
+
+<!-- $('#btnStop').removeAttr('disabled');
+}
+
+function stopRecord(){
+	<!-- Έλεγχος εγκυρότητας πεδίων
+
+			$("#map").addClass("disabledbutton");
+			$("#intro-panel").addClass("disabledbutton");
+			document.getElementById("btnStop").disabled = true;<!-- Δεν παίζει
+			document.getElementById("btnStart").disabled = false;
+			
+			
+			document.getElementById("btnRetrieve").disabled = true;
+			document.getElementById("btnErase").disabled = true;
+			document.getElementById("btnClear").disabled = true;
+			document.getElementById("markers").disabled = true;
+			
+			document.getElementById("routeTypeInsert").disabled = false;<!-- Δεν παίζει
+			
+			document.getElementById("routeTypeBrowse").disabled = false;
+			document.getElementById("btnSearch").disabled = false;
+			document.getElementById("routeList").disabled = false;
+			document.getElementById("routeName").disabled = false;		
+}
+
+function searchRecords(){
+
+		removeOptions(document.getElementById("routeList"));
+		
+		document.getElementById("routeList").value = "country";
+		
+		//database.ref('samdb-12345').child(document.getElementById('routeTypeBrowse').value).on('value', function(snapshot) {	
+		//console.log(snapshot.val());
+		//});
+		
+		var query = database.ref('samdb-12345').child(document.getElementById('routeTypeBrowse').value).orderByKey();
+		query.once("value").then(function(snapshot) {
+		snapshot.forEach(function(childSnapshot) {
+		var select = document.getElementById("routeList");
+		//var options = ["1", "2", "3", "4", "5"];
+		var el = document.createElement("option");
+		el.textContent = childSnapshot.key;
+		el.value = childSnapshot.key;
+		select.appendChild(el);
+		
+		
+		
+		//var key = childSnapshot.key;
+      
+		//var childData = childSnapshot.val();
+  });
+});
+fillSelect();
+	}
+	
+	function fillSelect(){
+		// Get the select element
+		var select = document.getElementById("routeList");
+		// Create a new option element
+var el2 = document.createElement("option");
+// Add our value to the option
+el2.textContent = "Διαλέξτε διαδρομή";
+el2.value = "Διαλέξτε διαδρομή";
+// Set the option to selected
+el2.selected = true;
+// Add the new option element to the select element
+select.appendChild(el2);
+		
+		
+		}
+	
+	
+	function removeOptions(selectbox){
+		var i;
+		for(i = selectbox.options.length ; i >= 0 ; i--)
+		{
+        selectbox.remove(i);
+		}
+		}
+
+
+</script>
+
+<script>
+	
+	
+  // Αρχικοποίηση της Βάσης Δεδομένων
+  var config = {
+    apiKey: "AIzaSyB_ADrmHQwanium2t73gFj6zZje3ZFRQXQ",
+    authDomain: "routeeval.firebaseapp.com",
+    databaseURL: "https://routeeval.firebaseio.com",
+    projectId: "routeeval",
+    storageBucket: "routeeval.appspot.com",
+    messagingSenderId: "1085498693604"
+  };
+  firebase.initializeApp(config);
+	
+    var database = firebase.database();
+    var ref;
+    var sel = document.getElementById("markers");
+    
+	var newMarkerIcon= sel.options[sel.selectedIndex].text;
+	var initMarkerIcon = "http://maps.google.com/mapfiles/kml/pushpin/red-pushpin.png";
+
+    var data = {
+      lat: null,
+      lng: null
+    };
+//**********************************************************************
+
+<!-- document.getElementById('map').style.pointerEvents = 'none';
+<!-- document.getElementById('map').style.pointerEvents = 'auto';
+<!-- document.getElementById('map').style.opacity = "0.5";
+
+
+
+
+
+//***********************************************************************
+
+	function routeSelect(rSel)
+    {
+			 
+			var tmp = rSel.options[rSel.selectedIndex].value;
+			//window.alert(tmp);
+			// Παρουσίαση των δεδομένων της ΔΒ
+			retrievePolyline2(tmp);
+			
+			$("#map").addClass("enabledbutton");
+			$("#intro-panel").addClass("enabledbutton");
+			
+		
+        
+    }
+    
+    
+    function retrievePolyline2(tmp2) {
+		//window.alert(tmp2);
+
+			clearMap();
+			ref = database.ref('samdb-12345').child(document.getElementById('routeTypeBrowse').value);
+			ref.child(tmp2).on('value', gotData, errData);
+			}
+			
+			
+
+	function changeMarker(sel)
+    {
+		if (confirm('Με την επιλογή σας αυτή Η σήμανση θα αλάξει σε :\n\n'+sel.options[sel.selectedIndex].text)) {
+			 
+			var tmp = sel.options[sel.selectedIndex].value;
+			initMarkerIcon = tmp;
+		} else {
+			
+		}
+        //alert(sel.options[sel.selectedIndex].text);
+    }
+
+    // Κατασκευή πινάκων για την πρόσθεση των markres και στη
+    // συνέχεια των polylines 
+    var map;
+    var markers = [];
+    var Polyline = [];
+    var initial_map_location;
+    var path;
+    
+    //var rrr=document.getElementById("routeType").value;
+ 
+	// Αρχικοποίηση του χάρτη
+    function initMap() {
+      initial_map_location = {
+        lat: 39.3629986,
+        lng: 22.9415525
+      };
+
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 21,
+        center: initial_map_location,
+        //mapTypeId: 'terrain'
+        mapTypeId: 'satellite'
+        
+      });
+
+      // Listener που καλεί την addMarker() όταν κάνει click ο χρήστης
+      map.addListener('click', function(event) {
+        addMarker(event.latLng);
+
+
+
+
+
+        // Καταχώρηση στη βάση δεδομένων
+        data.lat = event.latLng.lat();
+        data.lng = event.latLng.lng();
+        data.iconURI = initMarkerIcon;
+        route.child(document.getElementById('routeTypeInsert').value).child(document.getElementById('routeName').value).push(data, finished);
+      });
+
+	// Ρύθμιση των παραμέτρων της γραμμής
+      poly = new google.maps.Polyline({
+        strokeColor: '#f13811',
+        strokeOpacity: 1.0,
+        strokeWeight: 3
+      });
+      poly.setMap(map);
+      
+      // Listener που έχει τις συντεταγμένες
+        map.addListener('click', addLatLng);
+
+      // Δημιουργία και ρύθμιση του διαμερίσματος του χάρτη
+      var centerControlDiv = document.createElement('div');
+      var centerControl = new CenterControl(centerControlDiv, map);
+
+      centerControlDiv.index = 1;
+      map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+
+    }
+
+    // Πρόσθεση marker στον χάρτη και αποθήκευση στη βάση δεδομένων
+    function addMarker(location) {
+      var marker = new google.maps.Marker({
+		icon: initMarkerIcon,
+		//title: '3333333',
+         // animation: google.maps.Animation.DROP,
+        position: location,
+        map: map
+      });
+      markers.push(marker);
+		poly.setPath(null);
+		
+		
+    }
+
+    // Πίνακας με τα markers όλου του χάρτη
+    function setMapOnAll(map) {
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+		  
+      }
+    }
+
+    // Καθαρισμός του χάρτη με τα δεδομένα να παραμένουν στον πίνακα.
+    function clearMarkers() {
+      setMapOnAll(null);
+      for (var i = 0; i < markers.length; i++) {
+        poly.getPath().removeAt();
+      }
+       poly.setPath(null);
+		
+    }
+    
+	
+	// Καθαρισμός των καταχωρήσεων της ΒΔ
+    function eraseDB() {
+		var delRoute = database.ref('samdb-12345').child(document.getElementById('routeTypeInsert').value);
+      delRoute.ref.child(document.getElementById('routeName').value).remove();
+      clearMap();
+	  	
+    }
+    
+    //rType = document.getElementById("routeTypeInsert").value;
+	//rName = document.getElementById("routeName").value;
+    //var sss = "1111111111/"+document.getElementById("routeName").value;
+	
+	// Παρουσίαση των δεδομένων της ΔΒ
+    function retrievePolyline() {
+      ref = database.ref('samdb-12345').child(document.getElementById('routeTypeInsert').value).child(document.getElementById('routeName').value);
+      ref.on('value', gotData, errData);
+	  
+    }
+
+	
+    function gotData(data) {
+      var routes = data.val();
+      var keys = Object.keys(routes);
+
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var route = routes[key];
+        Polyline.push(route);
+        addMarker(route);
+      }
+      poly.setPath(Polyline);
+    }
+
+    function errData(err) {
+      alert(err);
+    }
+
+    // Καθαρισμός του χάρτη
+    function clearMap() {
+      clearMarkers();
+      markers = [];
+      Polyline = [];
+	}
+
+    // Διαχείρηση των click στον χάρτη
+    function addLatLng(event) {
+      path = poly.getPath();
+      path.push(event.latLng);
+    }
+
+    var route = database.ref('samdb-12345');
+
+    // Διαχείρηση Λαθών
+    function finished(error) {
+      if (error) {
+        console.log('ooops');
+        alert("Error to save data to firebasese");
+      } else {
+        console.log('data saved!');
+      }
+    }
+  </script>
+
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUhpLlPNGFG-itIPTpjV_wEPh1U5O9Oi0&amp;callback=initMap">
+  </script>
+</body>
+
+</html>
