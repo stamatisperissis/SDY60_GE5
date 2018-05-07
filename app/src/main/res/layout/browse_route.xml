@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1.0"
+        android:orientation="vertical" >
+
+        <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/vmap"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="1.0"
+        android:orientation="vertical"
+        android:background="#6b9e74">
+
+
+        <Button
+            android:id="@+id/buttonExit"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/buttonBrowseFoot"
+            android:layout_centerHorizontal="true"
+            android:text="Έξοδος"
+            android:textAllCaps="false"
+            android:textSize="17sp"
+            android:background="@drawable/button_shape"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

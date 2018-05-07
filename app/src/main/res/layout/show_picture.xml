@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="#6b9e74">
+
+    <ImageView
+        android:id="@+id/showTakenImage"
+        android:layout_width="363dp"
+        android:layout_height="431dp" />
+
+    <Button
+        android:id="@+id/exit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="exit"
+        android:background="@drawable/button_shape"
+        android:textSize="17sp"/>
+
+
+</LinearLayout>

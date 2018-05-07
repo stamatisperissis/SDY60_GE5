@@ -1,0 +1,72 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context=".TakePicture"
+    android:background="#6b9e74">
+
+    <Button
+        android:id="@+id/photo"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="22dp"
+        android:text="Ληψη Φωτογραφιας"
+        android:background="@drawable/button_shape"
+        android:textSize="17sp"/>
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_below="@+id/photo"
+        android:text="Click on button to capture image"
+        android:textSize="14dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        />
+
+    <TextView
+        android:id="@+id/imageDetails"
+        android:layout_below="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        />
+
+    <ImageView
+        android:id="@+id/showImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_below="@+id/imageDetails"
+        />
+
+    <Button
+        android:id="@+id/savePhotoAndExit"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/button_shape"
+        android:enabled="false"
+        android:text="Αποθηκευση και επιστροφη"
+        android:textSize="17sp"/>
+
+    <Button
+        android:id="@+id/buttonExit"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/button_shape"
+        android:text="Επιστροφή"
+        android:textAllCaps="false"
+        android:textSize="17sp"/>
+
+</RelativeLayout>
